@@ -38,7 +38,7 @@
             DetectCondition="Netfx4FullVersion AND (NOT VersionNT64 OR Netfx4x64FullVersion)">
       </ExePackage>
       <MsiPackage SourceFile="..\SetupProject\bin\Release\zh-cn\DGSetup1.msi" DisplayInternalUI="no">
-        <MsiProperty Name="USERNAME" Value="[Username]"/>
+        <MsiProperty Name="CreateShortcutDeskTop" Value="[CreateShortCut]"/>
         <MsiProperty Name="InstallFolder" Value="[InstallFolder]"/>
       </MsiPackage>
     </Chain>

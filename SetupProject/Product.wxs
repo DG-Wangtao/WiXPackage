@@ -33,7 +33,7 @@
     <!--All files to setup in your application-->
 		<ComponentGroup Id="ProductComponents">
       <Component Id="ProductComponent" Directory="INSTALLFOLDER" Guid="84D3BAE6-2758-4FBD-9714-1E052A066830">
-        <File Source="$(var.WpfAppToPackage.TargetPath)" Id="myapplication.exe"></File>
+        <File Source="$(var.WpfAppToPackage.TargetPath)" Id="myapplication.exe" KeyPath="yes"></File>
       </Component>
 		</ComponentGroup>
     

@@ -9,5 +9,4 @@
   <String Id="UpdateUrl">http://deepglint.com/</String>
   <String Id="AboutUrl">http://deepglint.com/fovea</String>
   <String Id="Title">格灵深瞳--让计算机看懂世界</String>
-  <String Id="ApplicationName">WpfAppToPackage.exe</String>
 </WixLocalization>

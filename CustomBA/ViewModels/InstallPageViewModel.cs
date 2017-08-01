@@ -79,6 +79,10 @@ namespace CustomBA.ViewModels
             {
                 createShortCut = value;
                 OnPropertyChanged("CreateShortCut");
+                string bol = "0";
+                if (createShortCut)
+                    bol = "1";
+                this.SetBurnVariable("CreateShortCut", bol);
             }
         }
        
