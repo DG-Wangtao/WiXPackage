@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="gb2312"?>
+<WixLocalization Culture="zh-cn" Codepage="936" Language="4" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+  <String Id="RegistryName">LibraFClinet</String>
+  <String Id="CompanyName">DeepGlint</String>
+  <String Id="ProductName">深瞳人眼摄像机客户端</String>
+  <String Id="Manufacturer">格灵深瞳</String>
+  <String Id="HelpPhone">010-62950616</String>
+  <String Id="HelpUrl">http://deepglint.com/</String>
+  <String Id="UpdateUrl">http://deepglint.com/</String>
+  <String Id="AboutUrl">http://deepglint.com/fovea</String>
+  <String Id="Title">格灵深瞳--让计算机看懂世界</String>
+  <String Id="ApplicationName">WpfAppToPackage.exe</String>
+</WixLocalization>

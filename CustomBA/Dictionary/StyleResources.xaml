@@ -1,0 +1,213 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:CustomBA"
+                    xmlns:helpclass="clr-namespace:CustomBA.HelpClass">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Strings.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Glyphicons.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="Color.xaml"></ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    
+    
+    <Style x:Key="glyphicon" TargetType="{x:Type Path}">
+        <Setter Property="Width" Value="15"></Setter>
+        <Setter Property="Height" Value="15"></Setter>
+        <Setter Property="Fill" Value="Black"></Setter>
+        <Setter Property="Stretch" Value="Uniform"></Setter>
+    </Style>
+    
+    
+    <Style x:Key="LicenseCheckBox" TargetType="{x:Type CheckBox}">
+        <Setter Property="Padding" Value="4,0,0,0"/>
+        <Setter Property="Content">
+            <Setter.Value>
+                <WrapPanel>
+                    <TextBlock Text="{DynamicResource Agree}"></TextBlock>
+                    <TextBlock Text="{DynamicResource ProductName}"></TextBlock>
+                    <TextBlock>
+                        <helpclass:ExternalBrowserHyperlink NavigateUri="http://deepglint.com/">
+                            <Run Text="{DynamicResource License }"></Run>
+                        </helpclass:ExternalBrowserHyperlink>
+                    </TextBlock>
+                    <TextBlock Text="{DynamicResource And}"></TextBlock>
+                    <TextBlock>
+                        <helpclass:ExternalBrowserHyperlink NavigateUri="http://deepglint.com/">
+                            <Run Text="{DynamicResource Privacy}"></Run>
+                        </helpclass:ExternalBrowserHyperlink>
+                    </TextBlock>
+                </WrapPanel>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <Grid SnapsToDevicePixels="true" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="14"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Width="14" Height="14" CornerRadius="4" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                            <Grid>
+                                <Path x:Name="checkedPath" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" Visibility="Collapsed" Data="M1,5 L4,8 9,2"/>
+                                <Rectangle x:Name="nullRec" Width="8" Height="8" RadiusX="2" RadiusY="2" Fill="{TemplateBinding BorderBrush}" Visibility="Collapsed"/>
+                            </Grid>
+                        </Border>
+                        <ContentPresenter Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter TargetName="checkedPath" Property="Visibility" Value="Visible"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource Background-Success1}"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="nullRec" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="HasContent" Value="true">
+                            <Setter Property="Padding" Value="4,0,0,0"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+   
+    <Style x:Key="ButtonBaseBaseStyle" TargetType="{x:Type ButtonBase}">
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <!--Button基样式-->
+    <Style x:Key="ButtonBaseStyle" BasedOn="{StaticResource ButtonBaseBaseStyle}" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="White"></Setter>
+        <Setter Property="FontSize" Value="12"></Setter>
+        <Setter Property="Padding" Value="10"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid>
+                        <Border x:Name="border" CornerRadius="4" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="0" SnapsToDevicePixels="true">
+                            <!--点击时显示-->
+                            <Grid x:Name="PressedLayer" Visibility="Collapsed">
+                                <Rectangle Height="3" VerticalAlignment="Top" Fill="#1F000000" RadiusX="4" RadiusY="4">
+                                    <Rectangle.Effect>
+                                        <BlurEffect Radius="5"></BlurEffect>
+                                    </Rectangle.Effect>
+                                </Rectangle>
+                                <Border CornerRadius="4" BorderBrush="#1F000000" BorderThickness="1,0">
+                                    <Border.Effect>
+                                        <BlurEffect Radius="3"></BlurEffect>
+                                    </Border.Effect>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <Border BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                        <!--禁用时显示-->
+                        <Rectangle x:Name="EnabledLayer" Fill="#4CFFFFFF" RadiusX="4" RadiusY="4" Visibility="Collapsed"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter TargetName="PressedLayer" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="#80cccccc"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter TargetName="EnabledLayer" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" Value="{DynamicResource Background-Info1}"/>
+                            <Setter Property="BorderBrush" Value="{DynamicResource Background-Info1}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!--Button-->
+    <Style BasedOn="{StaticResource ButtonBaseStyle}" TargetType="{x:Type Button}">
+        <Setter Property="Height" Value="{DynamicResource DefaultControlHeightSmall}"/>
+        <Setter Property="Background" Value="{DynamicResource Background-Default1}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush-Default1}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Foreground-Default}"/>
+    </Style>
+    <Style x:Key="btn-primary" BasedOn="{StaticResource ButtonBaseStyle}" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="{DynamicResource Background-Primary1}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Background-Primary1}"/>
+        <Setter Property="FontWeight" Value="Bold"></Setter>
+        <Setter Property="FontSize" Value="15"></Setter>
+        <Setter Property="Foreground" Value="White"></Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#3071a9"/>
+                <Setter Property="BorderBrush" Value="#285e8e"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <!--进度条-->
+    <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#00FFFFFF" Offset="0"/>
+        <GradientStop Color="#60FFFFFF" Offset="0.4"/>
+        <GradientStop Color="#60FFFFFF" Offset="0.6"/>
+        <GradientStop Color="#00FFFFFF" Offset="1"/>
+    </LinearGradientBrush>
+    <Style x:Key="ProgressBarBaseStyle" TargetType="{x:Type ProgressBar}">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Background" Value="#f5f5f5"/>
+        <Setter Property="BorderBrush" Value="#19000000"/>
+        <Setter Property="BorderThickness" Value="1,1,1,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                    <Grid>
+                        <Border x:Name="TemplateRoot" CornerRadius="4" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                            <Border.Effect>
+                                <BlurEffect Radius="2"></BlurEffect>
+                            </Border.Effect>
+                        </Border>
+                        <Grid Margin="{TemplateBinding BorderThickness}">
+                            <Rectangle x:Name="PART_Track"/>
+                            <Grid HorizontalAlignment="Left">
+                                <Decorator x:Name="PART_Indicator" HorizontalAlignment="Left" Margin="0,-1,0,0">
+                                    <Border CornerRadius="4" x:Name="Animation" ClipToBounds="true" Background="{TemplateBinding Foreground}">
+                                        <Rectangle x:Name="PART_GlowRect" Fill="{StaticResource ProgressBarIndicatorAnimatedFill}" HorizontalAlignment="Left" Margin="-100,0,0,0" Width="100"/>
+                                    </Border>
+                                </Decorator>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Label FontSize="{DynamicResource SmallFontSize}" Foreground="#fff" Content="{TemplateBinding Value}"></Label>
+                                    <Label FontSize="{DynamicResource SmallFontSize}" Foreground="#fff" Content="%"></Label>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Vertical">
+                            <Setter Property="LayoutTransform" TargetName="TemplateRoot">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="progress-bar" BasedOn="{StaticResource ProgressBarBaseStyle}" TargetType="{x:Type ProgressBar}">
+        <Setter Property="Foreground" Value="{DynamicResource Background-Primary1}"/>
+    </Style>
+    <Style x:Key="progress-bar-info" BasedOn="{StaticResource ProgressBarBaseStyle}" TargetType="{x:Type ProgressBar}">
+        <Setter Property="Foreground" Value="{DynamicResource Background-Info1}"/>
+    </Style>
+</ResourceDictionary>

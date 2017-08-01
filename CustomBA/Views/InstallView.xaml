@@ -1,0 +1,34 @@
+﻿<Window x:Class="CustomBA.Views.InstallView"           
+   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"            
+   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+   xmlns:usercontrol="clr-namespace:CustomBA.Views" FontSize="14"
+   MouseLeftButtonDown="Window_MouseLeftButtonDown" Background="White"
+   mc:Ignorable="d" WindowStyle="None" Width="800" Height="580" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/CustomBA;component/Dictionary/StyleResources.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <TextBlock Text="{DynamicResource Version}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5"></TextBlock>
+        <Grid  Visibility="{Binding ProgressEnabled,Converter={StaticResource BooleanToVisibilityConverter}}">
+            <usercontrol:ProgressPage></usercontrol:ProgressPage>
+        </Grid>
+        <Grid Visibility="{Binding UninstallEnabled,Converter={StaticResource BooleanToVisibilityConverter}}"  >
+            <usercontrol:UnistallRepairPage></usercontrol:UnistallRepairPage>
+        </Grid>
+        <Grid Visibility="{Binding FinishEnabled,Converter={StaticResource BooleanToVisibilityConverter}}" >
+            <usercontrol:FinishPage></usercontrol:FinishPage>
+        </Grid>
+        <Grid Visibility="{Binding InstallEnabled,Converter={StaticResource BooleanToVisibilityConverter}}">
+            <usercontrol:InstallPage></usercontrol:InstallPage>
+        </Grid>
+        <Grid Visibility="{Binding CancelEnabled,Converter={StaticResource BooleanToVisibilityConverter}}">
+            <usercontrol:CancelPage></usercontrol:CancelPage>
+        </Grid>
+    </Grid>
+</Window>

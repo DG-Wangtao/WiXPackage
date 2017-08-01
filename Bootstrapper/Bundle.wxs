@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" 
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" 
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <?define DotNetExeName=..\dotnetfx40_full_x86_x64.exe ?>
+  <?define DoNetDownloadUrl=http://go.microsoft.com/fwlink/?LinkId=164193 ?>
+  <?define Dia=..\?>
+	<Bundle Name="!(loc.BundleName)" 
+          Version="1.1.0.0"
+          Manufacturer="!(loc.Manufacturer)"
+          HelpTelephone="!(loc.HelpPhone)" HelpUrl="!(loc.HelpUrl)" UpdateUrl="!(loc.UpdateUrl)"
+          AboutUrl="!(loc.AboutUrl)" IconSourceFile="icon\icon.ico" 
+          DisableRemove="no" DisableModify="yes"
+          UpgradeCode="97C4DF61-91A8-4645-9A8A-547A0B288D52">
+    <bal:Condition Message="!(loc.windowsversionmes)">
+      <![CDATA[VersionNT >= v6.1]]>
+    </bal:Condition>
+    
+    <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost" >
+      <Payload SourceFile="$(var.CustomBA.TargetDir)CustomBA.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)BootstrapperCore.config" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Composition.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Interactivity.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Mvvm.Desktop.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Mvvm.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.PubSubEvents.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.SharedInterfaces.dll" />
+    </BootstrapperApplicationRef>
+    
+    <WixVariable Id="WixMbaPrereqLicenseUrl" Value=""/>
+    <WixVariable Id="WixMbaPrereqPackageId" Value=""/>
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx4FullVersion" />
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx4x64FullVersion" Win64="yes" />
+    <Chain  DisableRollback="yes">
+      <ExePackage Id="Netfx4Full" Cache="yes" Compressed="no"  PerMachine="yes" 
+            Permanent="yes" Vital="yes" SourceFile="$(var.DotNetExeName)"
+            InstallCommand="/q /norestart "  DownloadUrl="$(var.DoNetDownloadUrl)" 
+            DetectCondition="Netfx4FullVersion AND (NOT VersionNT64 OR Netfx4x64FullVersion)">
+      </ExePackage>
+      <MsiPackage SourceFile="..\SetupProject\bin\Release\zh-cn\DGSetup1.msi" DisplayInternalUI="no">
+        <MsiProperty Name="USERNAME" Value="[Username]"/>
+        <MsiProperty Name="InstallFolder" Value="[InstallFolder]"/>
+      </MsiPackage>
+    </Chain>
+  </Bundle>
+</Wix>

@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:CustomBA" 
+                    xmlns:System="clr-namespace:System;assembly=mscorlib">
+    <System:String x:Key="ProductName">深瞳人眼摄像机</System:String>
+    <System:String x:Key="InstallButtonText">快速安装</System:String>
+    <System:String x:Key="Agree">同意</System:String>
+    <System:String x:Key="License">用户许可协议</System:String>
+    <System:String x:Key="And">及</System:String>
+    <System:String x:Key="Privacy">隐私政策</System:String>
+    <System:String x:Key="CustomeInstall">自定义安装</System:String>
+    <System:String x:Key="InstallLocation">安装位置：</System:String>
+    <System:String x:Key="Browse">浏览</System:String>
+    <System:String x:Key="ToDeskTop">创建桌面图标</System:String>
+    <System:String x:Key="Install">立即安装</System:String>
+    <System:String x:Key="Back">返回</System:String>
+    <System:String x:Key="Finish">完成</System:String>
+    <System:String x:Key="Repair">修复</System:String>
+    <System:String x:Key="Uninstall">卸载</System:String>
+    <System:String x:Key="Cancel">取消</System:String>
+    <System:String x:Key="Version">v1.1.0.0</System:String>
+    <System:String x:Key="Close">关闭</System:String>
+    <System:String x:Key="HasOldVersion">您的计算机已经安装其他版本，请先前往控制面板进行卸载！</System:String>
+</ResourceDictionary>

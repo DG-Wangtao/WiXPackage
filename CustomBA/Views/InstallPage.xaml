@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="CustomBA.Views.InstallPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CustomBA.Views"
+             mc:Ignorable="d" FontSize="14">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/CustomBA;component/Dictionary/StyleResources.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Image Source="{Binding BackImage}"></Image>
+        <Image Source="{Binding LogoImage}" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10"></Image>
+        <StackPanel Grid.Row="1" Margin="20">
+            <Button Width="200" Height="74" Margin="20" FontSize="18" 
+                    Content="{DynamicResource InstallButtonText}" Style="{DynamicResource btn-primary}"
+                    Command="{Binding btn_install}" IsEnabled="{Binding ElementName=Accept,Path=IsChecked}">
+            </Button>
+            <Button Margin="20,0,20,0" HorizontalAlignment="Right" Command="{Binding btn_show}" BorderThickness="0" Background="Transparent">
+                <WrapPanel>
+                    <TextBlock Text="{DynamicResource CustomeInstall}" Width="80"/>
+                    <Path Fill="Black" Style="{DynamicResource glyphicon}" Data="{DynamicResource glyphicon-chevron-right}"></Path>
+                </WrapPanel>
+            </Button>
+        </StackPanel>
+        <StackPanel Background="White" Grid.Row="1" Margin="20" HorizontalAlignment="Center" Visibility="{Binding SeleFileVisibility}">
+            <Label Content="{DynamicResource InstallLocation}"></Label>
+            <WrapPanel >
+                <TextBox Width="650" Text="{Binding InstallFolder}" VerticalContentAlignment="Center"></TextBox>
+                <Button Content="{DynamicResource Browse}" Padding="20,10,20,10" Command="{Binding btn_browse}"></Button>
+            </WrapPanel>
+            <WrapPanel>
+                <CheckBox Margin="0,20,20,0" IsChecked="{Binding CreateShortCut}" Foreground="Gray" Content="{DynamicResource ToDeskTop}"></CheckBox>
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Right" Margin="0,0,10,0">
+                <Button Content="{DynamicResource Back}" Background="White" FontSize="15" 
+                        Margin="0,0,30,0" Padding="20,10,20,10" BorderBrush="Gray"
+                        Command="{Binding btn_show}">
+                </Button>
+                <Button Content="{DynamicResource Install}" Style="{DynamicResource btn-primary}"
+                        Command="{Binding btn_install}" IsEnabled="{Binding ElementName=Accept,Path=IsChecked}"></Button>
+            </WrapPanel>
+        </StackPanel>
+        <CheckBox Grid.Row="1"  Name="Accept" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                  Margin="50,30" Width="300" IsChecked="True"
+                  Style="{DynamicResource LicenseCheckBox}"/>
+        <Button Background="Transparent" BorderThickness="0" Command="{Binding btn_cancel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Margin="5">
+            <Path Fill="Red" Style="{DynamicResource glyphicon}" Data="{DynamicResource glyphicon-remove-circle}"></Path>
+        </Button>
+        </Grid>
+</UserControl>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Id="*" Name="!(loc.ProductName)" Language="4" 
+           Version="1.1.0.0" 
+           Manufacturer="!(loc.Manufacturer)" UpgradeCode="B9F8908C-A947-4D44-8D46-A9804C877629">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <Icon Id="icon" SourceFile="icon\icon.ico"/>
+		<MajorUpgrade  Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate />
+    <!--桌面快捷方式/菜单栏图标/开机自启-->
+    <Property Id="CreateShortcutDeskTop">1</Property>
+    <Property Id="CreateShortcutMenu">1</Property>
+    <!--put files to package-->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="INSTALLFOLDER"/>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="AppStartMenuFolder" Name="!(loc.ProductName)"/>
+      </Directory>
+      <Directory Id="DesktopFolder"></Directory>
+    </Directory>
+   
+    <!--put files to set up-->
+    <Feature Id="ProductFeature" Title="!(loc.Title)" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="RegistryComponents" />
+      <ComponentRef Id="ApplicationShortcutMenu" />
+      <ComponentRef Id="ApplicationShortcutDeskTop" />
+    </Feature>
+  </Product>  
+
+	<Fragment>
+    <!--All files to setup in your application-->
+		<ComponentGroup Id="ProductComponents">
+      <Component Id="ProductComponent" Directory="INSTALLFOLDER" Guid="84D3BAE6-2758-4FBD-9714-1E052A066830">
+        <File Source="$(var.WpfAppToPackage.TargetPath)" Id="myapplication.exe"></File>
+      </Component>
+		</ComponentGroup>
+    
+    <!--Registry-->
+    <ComponentGroup Id="RegistryComponents" Directory="INSTALLFOLDER">
+
+      <Component Id="CMP_WriteToRegistry"
+                 Guid="1ECA3238-1B7B-4818-9A02-FAD3D6773613">
+
+        <RegistryValue Id="RegistryValue"
+                       KeyPath="yes"
+                       Action="write"
+                       Root="HKLM"
+                       Key="Software\Microsoft\!(loc.CompanyName)\!(loc.RegistryName)"
+                       Name="!(loc.ProductName)"
+                       Value="!(loc.ProductName)"
+                       Type="string" />
+      </Component>
+    </ComponentGroup>
+    
+    <!--Shortcut on Desktop-->
+    <DirectoryRef Id="DesktopFolder">
+        <Component Id="ApplicationShortcutDeskTop">
+          <Condition>
+            <![CDATA[CreateShortcutDeskTop=1]]>
+          </Condition>
+          <Shortcut Id="ApplicationDeskTopShortcut"
+                 Name="!(loc.ProductName)"
+                 Description="!(loc.Title)"
+                 Target="[#myapplication.exe]" Icon="icon"
+                 WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+          <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+          <RegistryValue
+              Root="HKCU"
+              Key="Software\Microsoft\!(loc.CompanyName)\!(loc.RegistryName)"
+              Name="installed"
+              Type="integer"
+              Value="1"
+              KeyPath="yes"/>
+        </Component>
+    </DirectoryRef>
+    
+    <!--Shortcut in startmenu-->
+    <DirectoryRef Id="AppStartMenuFolder">
+      <Component Id="ApplicationShortcutMenu" Guid="5AE52100-3B6E-4BA7-8A87-ED50F790B316">
+        <Condition>
+          <![CDATA[CreateShortcutMenu=1]]>
+        </Condition>
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="!(loc.ProductName)"
+                  Description="!(loc.Title)"
+                  Target="[#myapplication.exe]" Icon="icon"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <RemoveFolder Id="CleanUpShortCut" Directory="AppStartMenuFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\!(loc.CompanyName)\!(loc.RegistryName)" 
+                       Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+	</Fragment>
+</Wix>
