@@ -17,9 +17,7 @@ namespace CustomBA.Models
         }
         public static BootstrapperApplicationModel GetBootstrapperAppModel()
         {
-            if (bootstrapperAppModel != null)
-                return bootstrapperAppModel;
-            else return null;
+             return bootstrapperAppModel;
         }
         private BootstrapperApplicationModel(BootstrapperApplication bootstrapperApplication)
         {

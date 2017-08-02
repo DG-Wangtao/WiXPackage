@@ -131,10 +131,6 @@ namespace CustomBA.ViewModels
         {
             this.model.BootstrapperApplication.DetectPackageComplete += this.DetectPackageComplete;
         }
-        public void SetBurnVariable(string variableName, string value)
-        {
-            this.model.SetBurnVariable(variableName, value);
-        }
         public bool ValidDir(string path)
         {
             try

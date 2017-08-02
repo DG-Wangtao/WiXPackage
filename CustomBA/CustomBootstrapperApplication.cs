@@ -17,6 +17,10 @@ namespace CustomBA
                 customBootstrapperApplication = new CustomBootstrapperApplication();
             return customBootstrapperApplication;
         }
+        public CustomBootstrapperApplication()
+        {
+            customBootstrapperApplication = this;
+        }
         protected override void Run()
         {
             Dispatcher = Dispatcher.CurrentDispatcher;

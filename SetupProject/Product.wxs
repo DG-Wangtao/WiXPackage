@@ -9,7 +9,7 @@
 		<MajorUpgrade  Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate />
     <!--桌面快捷方式/菜单栏图标/开机自启-->
-    <Property Id="CreateShortcutDeskTop">1</Property>
+    <Property Id="CreateShortcutDeskTop"></Property>
     <Property Id="CreateShortcutMenu">1</Property>
     <!--put files to package-->
     <Directory Id="TARGETDIR" Name="SourceDir">

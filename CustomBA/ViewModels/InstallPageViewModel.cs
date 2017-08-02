@@ -142,8 +142,6 @@ namespace CustomBA.ViewModels
             InstallCommand = new DelegateCommand(Install, IsValid);
             CloseCommand = new DelegateCommand(Close, IsValid);
             ShowSelecFileCommand = new DelegateCommand(Show, IsValid);
-            this.BootstrapperModel.BootstrapperApplication.ApplyBegin += this.ApplyBegin;
-
         }
         public void Browse()
         {
@@ -192,6 +190,7 @@ namespace CustomBA.ViewModels
         private void WireUpEventHandlers()
         {
             this.BootstrapperModel.BootstrapperApplication.PlanComplete += this.PlanComplete;
+            this.BootstrapperModel.BootstrapperApplication.ApplyBegin += this.ApplyBegin;
         }
         public bool ValidDir(string path)
         {
