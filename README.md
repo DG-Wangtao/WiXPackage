@@ -1,8 +1,57 @@
 # WiX Toolset制作完全自定义界面的Windows安装程序
 借助WiX提供的Bootstrapper和Burn技术，编写WPF MVVM图形界面类库，来实现自定义用户界面的捆绑安装。
+- ### [目录](#目录)
+    - [实现的功能](#实现的功能)
+    - [项目流程](#项目流程)
+    - [如何使用Demo](#如何使用demo)
+        - [下载安装WiX](#下载安装wix)
+        - [下载源码到本地](#下载源码到本地)
+        - [添加要打包的项目引用](#添加要打包的项目引用)
+        - [修改生成的安装包名称](#修改生成的安装包名称)
+        - [编辑Product](#编辑product)
+            - [修改名称等文字信息](#修改名称等文字信息)
+            - [修改要打包安装的文件](#修改要打包安装的文件)
+            - [添加自定义变量](#添加自定义变量)
+            - [如何创建桌面与开始桌面快捷方式](#如何创建桌面与开始桌面快捷方式)
+        - [编辑Bundle](#编辑bundle)
+            - [修改文字信息](#修改文字信息)
+            - [引用wpf类库](#引用wpf类库)
+            - [定义变量](#定义变量)
+            - [安装多个msi或者exe文件](#安装多个msi或者exe文件)
+            - [获取用户输入信息并传递给Product](#获取用户输入信息并传递给product)
+		- [WPF类库与MVVM模式](#wpf类库与mvvm模式)
+    - [如何从零开发](#如何从零开发)
+        - [下载并安装WiX](#下载并安装wix)
+        - [创建解决方案](#创建解决方案)
+        - [向自定义C#类库添加必要的引用](#向自定义类库添加必要的引用)
+        - [扩展BootstrapperApplication类](#扩展bootstrapperapplication类)
+        - [定义Model](#定义model)
+        - [定义ViewModel](#定义viewmodel)
+        - [创建View](#创建view)
+        - [将C#类库引入Bootstrapper](#将类库引入bootstrapper)
+        - [使用Setup Project打包你的程序](#使用setup-project打包你的程序)
+        - [使用Bootstrapper打包msi文件](#使用bootstrapper打包msi文件)
+        - [Product文件中元素与属性的简单说明](#product文件中元素与属性的简单说明)
+            - [Product元素](#product元素)
+            - [Package元素](#package元素)
+            - [MajorUpgrade元素](#majorupgrade元素)
+            - [MediaTemplate元素](#mediatemplate元素)
+            - [Directory元素](#directory元素)
+            - [Feature元素](#feature元素)
+            - [Component元素](#component元素)
+            - [File元素](#file元素)
+            - [创建快捷方式](#创建快捷方式)
+            - [添加到注册表](#添加到注册表)
+            - [条件判断](#条件判断)
+        - [Bundle文件中元素与属性的简单说明](#bundle文件中元素与属性的简单说明)
+            - [Chain元素](#chain元素)
+            - [判断当前操作系统版本是否满足](#判断当前操作系统版本是否满足)
+            - [判断.net framework版本并下载安装](#判断framework版本并下载安装)
+    - [参考内容](#参考内容)
+        - [WiX下载地址](#wix下载地址)
+        - [参考教程](#参考教程)
 
-[TOC]
-## 实现的功能;
+## 实现的功能
 * 将使用Visual Studio 开发的windows软件打包为安装软件（.exe）
 * 具有安装/卸载/修复/的功能，可判断是否已安装旧版本
 * 判断是否已安装所依赖的其他软件，如.net framework，支持package从网址自动下载安装
@@ -13,8 +62,9 @@
 * 建立WiX Setup Project将上述文件打包为 .msi安装文件，本项目可以创建用户界面但默认是没有，我们也不需要
 * 建立Bootstrapper Project对生成的 .msi安装文件进行包装，并对依赖的外部环境或者软件进行判断安装，提供安装界面
 * 建立c# wpf类库，自定义用户安装行为与界面，实现与ootstrapper Project的通信  
-  ![](https://raw.githubusercontent.com/DG-Wangtao/WiXPackage/master/imag/Visual%20Studio%202015%E6%89%93%E5%8C%85%E6%96%B9%E5%BC%8F.png)
-  
+
+![](/imag/VisualStudio2015打包方式.png)
+
 * * *
 
 ## 如何使用Demo
@@ -108,7 +158,7 @@ Product.wxs:  
     </Chain>
 ```
 #### 获取用户输入信息并传递给Product
-如[这里](#添加自定义变量)所说，要把变量从viewmdoel传给Product需要进行依次的传值。InstallPageViewModel是安装界面的viewmodel，它定义了一个属性名为“CreateShortCut”的公有boole变量，绑定到用户是否勾选了“创建桌面快捷方式”，并在其`setter`语句块中调用
+如[这里](#添加自定义变量)所说，要把变量从viewmdoel传给Product需要进行依次的传值。InstallPageViewModel是安装界面的viewmodel，它定义了一个属性名为“CreateShortCut”的公有bool变量，绑定到用户是否勾选了“创建桌面快捷方式”，并在其`setter`语句块中调用:
 ```
 set{
 	... ...
@@ -121,11 +171,11 @@ set{
         <MsiProperty Name="CreateShortcutDeskTop" Value="[CreateShortCut]"/>
       </MsiPackage>
 ```
-在Product.wxs定义`Id`为`CreateShortcutDeskTop`的`<Property>`获取Bundle传递的值，而后在创建桌面快捷方式的`<Component>`中加一个验证条件，当`CreateShortcutDeskTop`属性的值为1时创建桌面快捷方式，否则不创建：
+在Product.wxs中可直接通过`[CREATESHORTCUTDESKTOP]`(将变量名改为大写)获取Bundle传递的值，而后在创建桌面快捷方式的`<Component>`中加一个验证条件，当`CREATESHORTCUTDESKTOP`属性的值为`True`时创建桌面快捷方式，否则不创建：
 ```
  <Component Id="ApplicationShortcutDeskTop">
 +          <Condition>
-+            <![CDATA[CreateShortcutDeskTop=1]]>
++            <![CDATA[CREATESHORTCUTDESKTOP="True"]]>
 +          </Condition>
           <Shortcut Id="ApplicationDeskTopShortcut"
                  Name="!(loc.ProductName)"
@@ -143,9 +193,9 @@ set{
         </Component>
 ```
 - - -
-### C#类库MVVM模式
-![](https://raw.githubusercontent.com/DG-Wangtao/WiXPackage/master/imag/BootstrapperWPF.png)
+### WPF类库与MVVM模式
 
+![](/imag/BootstrapperWPF.png)
 
 * * *
 
@@ -162,7 +212,7 @@ set{
 4. 创建 **Bootstrapper** 项目，在当前解决方案上右键添加——>新项目，同样找到 **Windows Installer XML** ,在右边选中 **Bootstrapper Project** ，按自己需要修改名称并确定。此时会看到解决方案资源管理器中看到一个有 **Bundle.wxs** 文件和 **References** 引用文件夹。
 5. 创建C#类库，在当前解决方案上右键添加——>新项目，以此找到Visaul C#—>**Class Library**，命名为CustomBA。向References需要添加Bootstrapper程序集的引用，在WiX的安装路径（C:\Program Files (x86)\WiX Toolset v3.10\SDK）中找到**BootstrapperCore.dll**并添加引用。在SDK目录下还能看见名为 **BootstrapperCore.config** 的文件，将它复制粘贴到这个类库项目文件中，打开它并且将他的 **host** 元素的assemblyName属性值改为本类库名（CustomBA）。
 
-### 向类库添加必要的引用
+### 向自定义类库添加必要的引用
 1. 为了要使用WPF来自定义界面，还需要向C#类库添加如下引用：
 	* PresentationCore
 	* PresentationFramework
@@ -181,27 +231,24 @@ using Microsoft.Tools.WindowsInstallerXml.Bootstrapper;
 ### 扩展BootstrapperApplication类
 刚才在类库中新建了一个名为`CustomBootstrapperApplication`的类，现在我们对他进行修改。修改后的完整代码如下：
 ```
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Windows.Threading;
+using CustomBA.Models;
+using CustomBA.ViewModels;
+using CustomBA.Views;
 using Microsoft.Tools.WindowsInstallerXml.Bootstrapper;
+using System;
+using System.Windows.Threading;
 
 namespace CustomBA
 {
-    public class CustomBootstrapperApplication : BootstrapperApplication
+    public class CustomBootstrapperApplication :BootstrapperApplication
     {
         public static Dispatcher Dispatcher { get; set; }
-
         protected override void Run()
         {
             Dispatcher = Dispatcher.CurrentDispatcher;
 
-            var model = new BootstrapperApplicationModel(this);
-            var viewModel = new InstallViewModel(model);
-            var view = new InstallView(viewModel);
+            var model = BootstrapperApplicationModel.GetBootstrapperAppModel(this);
+            var view = new InstallView();
 
             model.SetWindowHandle(view);
 
@@ -215,14 +262,630 @@ namespace CustomBA
 }
 ```
 * 让`CustomBootstrapperApplication`类继承`BootstrapperApplication`类并重写他的`Run`方法，这便是安装程序的入口。  
-* 在`Run`方法中，定义一个`Dispatcher`对象来惊醒UI线程与其他线程的通信，定义`model`，`viewmodel`和`view`来设置显示界面
+* 在`Run`方法中，定义一个`Dispatcher`对象来惊醒UI线程与其他线程的通信，定义`model`和`view`来设置显示界面
 * `SetWindowHandle`方法是待会要在`model`类中要写的方法，它给Burn传递要显示的`view`
 * `Engine.Detect()`用来检测这个bundle是否已经被安装
 * `Detect`需要在`view`,`viewmodel`和`model`实例化之后再被调用，因为它需要的一些配置信息需要被设置。
-* `Show()`方法则显示图形界面，D`ispatcher.Run()`来启动线程，当安装完成或者取消时调用`Dispatcher.InvokeShutdown（）`可以结束线程。
+* `Show()`方法则显示图形界面，`Dispatcher.Run()`来启动线程，当安装完成或者取消时调用`Dispatcher.InvokeShutdown（）`可以结束线程。
 * `Engine.Quit()`无论安装结果如何都会关闭安装任务。
 
 ### 定义Model
+在Models文件夹中新建`BootstrapperApplicationModel`类并修改为如下内容：
+```
+using Microsoft.Tools.WindowsInstallerXml.Bootstrapper;
+using System;
+using System.Windows;
+using System.Windows.Interop;
+
+namespace CustomBA.Models
+{
+    public class BootstrapperApplicationModel
+    {
+        private IntPtr hwnd;
+        private static BootstrapperApplicationModel bootstrapperAppModel;
+        public static BootstrapperApplicationModel GetBootstrapperAppModel(BootstrapperApplication bootstrapperApplication)
+        {
+            if (bootstrapperAppModel == null)
+                bootstrapperAppModel = new BootstrapperApplicationModel(bootstrapperApplication);
+            return bootstrapperAppModel;
+        }
+        public static BootstrapperApplicationModel GetBootstrapperAppModel()
+        {
+             return bootstrapperAppModel;
+        }
+        private BootstrapperApplicationModel(BootstrapperApplication bootstrapperApplication)
+        {
+            this.BootstrapperApplication =
+              bootstrapperApplication;
+            this.hwnd = IntPtr.Zero;
+            string[] strs = GetCommandLine();
+        }
+
+        public BootstrapperApplication BootstrapperApplication { get; private set; }
+
+        public int FinalResult { get; set; }
+
+        public void SetWindowHandle(Window view)
+        {
+            this.hwnd = new WindowInteropHelper(view).Handle;
+        }
+
+        public void PlanAction(LaunchAction action)
+        {
+            this.BootstrapperApplication.Engine.Plan(action);
+        }
+
+        public void ApplyAction()
+        {
+            this.BootstrapperApplication.Engine.Apply(this.hwnd);
+        }
+
+        public void LogMessage(string message)
+        {
+            this.BootstrapperApplication.Engine.Log(
+              LogLevel.Standard,
+              message);
+        }
+        public void SetBurnVariable(string variableName, string value)
+        {
+            this.BootstrapperApplication.Engine
+               .StringVariables[variableName] = value;
+        }
+        public string[] GetCommandLine()
+        {
+            return this.BootstrapperApplication.Command
+               .GetCommandLineArgs();
+        }
+        public bool HelpRequested()
+        {
+            return this.BootstrapperApplication.Command.Action ==
+               LaunchAction.Help;
+        }
+    }
+    public enum InstallState
+    {
+        Initializing,
+        Present,
+        NotPresent,
+        Applying,
+        Cancelled,
+        Applied,
+        Failed,
+    }
+}
+```
+该类为WPF程序的Model类，它封装了继承自BootstrapperApplication（来自于BootstrapperCore.dll）的CustomBootstrapperApplication的方法，比如设置界面实例`SetWindowHandle()`，配置安装信息`PlanAction()`，执行动作包括安装/卸载/修复`ApplyAction()`，向Burn传递参数`SetBurnVariable()`等。
+这个类定义为一个单例，方便在每一个viewmodel中获取拥有当前安装程序信息，因为它的构造函数需要一个`BootstrapperApplication`的参数，在程序入口处实例化Model并传递`this`作为参数，那么之后的所有viewmodel都可以访问该单例Model而无需再获取一个BootstrapperApplication来实例化Model。
+
+### 定义ViewModel
+#### InstallView窗口的ViewModel： InstallViewModel
+在ViewModels文件夹中新建名为InstallViewModel的类，并修改其内容如下：
+```
+using CustomBA.Models;
+using Microsoft.Practices.Prism.Commands;
+using Microsoft.Practices.Prism.ViewModel;
+using Microsoft.Tools.WindowsInstallerXml.Bootstrapper;
+using Microsoft.Win32;
+using System;
+using System.IO;
+using System.Windows;
+using System.Windows.Input;
+
+namespace CustomBA.ViewModels
+{
+    public class InstallViewModel : BaseViewModel
+    {
+        private string bit3264 = @"SOFTWARE\WOW6432Node\Microsoft\DeepGlint";
+        private string bit32 = @"SOFTWARE\Microsoft\DeepGlint";
+        private string productName = "LibraFClinet";
+        private static string MyInstellerName = "DGSetup1.msi";
+        private InstallState state;
+        private static InstallViewModel viewmodel;
+        /// <summary>
+        /// 构造函数，使用单例模式
+        /// </summary>
+        private InstallViewModel()
+        {
+            this.State = InstallState.Initializing;
+            this.WireUpEventHandlers();
+            ///检查安装文件是否为空
+            this.model.BootstrapperApplication.ResolveSource +=
+               (sender, args) =>
+               {
+                   if (!string.IsNullOrEmpty(args.DownloadSource))
+                   {
+                       // Downloadable package found 
+                       args.Result = Result.Download;
+                   }
+                   else
+                   {
+                       // Not downloadable 
+                       args.Result = Result.Ok;
+                   }
+               };
+        }
+        public static InstallViewModel GetViewModel()
+        {
+            if (viewmodel == null)
+                viewmodel = new InstallViewModel();
+            return viewmodel;
+        }
+        private BootstrapperApplicationModel model
+        {
+            get
+            {
+                return BootstrapperApplicationModel.GetBootstrapperAppModel();
+            }
+        }
+        /// <summary>
+        /// 当前产品状态
+        /// </summary>
+        
+        public InstallState State
+        {
+            get
+            {
+                return this.state;
+            }
+            set
+            {
+                if (this.state != value)
+                {
+                    this.state = value;
+                    if (state == InstallState.NotPresent)
+                        if (ChekExistFromRegistry())
+                        {
+                            state = InstallState.Cancelled;
+                        }
+                    OnPropertyChanged("State");
+                    OnPropertyChanged("CancelEnabled");
+                    OnPropertyChanged("InstallEnabled");
+                    OnPropertyChanged("UninstallEnabled");
+                    OnPropertyChanged("ProgressEnabled");
+                    OnPropertyChanged("FinishEnabled");
+                }
+                
+            }
+        }
+        /// <summary>
+        /// 与 InstallEnabled，UninstallEnabled,ProgressEnabled,FinishEnabled
+        /// 根据State的值，判断该显示哪个界面
+        /// </summary>
+        public bool CancelEnabled
+        {
+            get
+            {
+                return State == InstallState.Cancelled;
+            }
+        }
+        public bool InstallEnabled
+        {
+            get {
+                return State == InstallState.NotPresent;
+            }
+        }
+
+        public bool UninstallEnabled
+        {
+            get
+            {
+                return State == InstallState.Present;
+            }
+        }
+        public bool ProgressEnabled
+        {
+            get
+            {
+                return State == InstallState.Applying;
+            }
+        }
+        public bool FinishEnabled
+        {
+            get
+            {
+                return State == InstallState.Applied;
+            }
+        }
+
+
+        protected void DetectPackageComplete(object sender, DetectPackageCompleteEventArgs e)
+        {
+            if (e.PackageId.Equals(MyInstellerName, StringComparison.Ordinal))
+            {
+                this.State = e.State == PackageState.Present ?
+                  InstallState.Present : InstallState.NotPresent;
+            }
+
+        }
+
+        private void WireUpEventHandlers()
+        {
+            //重新定义`BootstrapperApplication`的安装包验证方式，判断是当前msi安装包是否已经安装过
+            this.model.BootstrapperApplication.DetectPackageComplete += this.DetectPackageComplete;
+        }
+        /// <summary>
+        /// 查找注册表看是否已经安装本产品的其他版本
+        /// </summary>
+        /// <returns></returns>
+        protected bool ChekExistFromRegistry()
+        {
+            try
+            {
+                //64位
+                using (RegistryKey pathKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(bit3264))
+                {
+                    var strs = pathKey.GetSubKeyNames();
+                    foreach (string str in strs)
+                        if (str.Equals(productName))
+                        {
+                            return true;
+                        }
+                }
+                //32位
+                using (RegistryKey pathKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(bit32))
+                {
+                    var strs = pathKey.GetSubKeyNames();
+                    foreach (string str in strs)
+                        if (str.Equals(productName))
+                        {
+                            return true;
+                        }
+                }
+            }
+            catch { }
+            return false;
+        }
+    }
+}
+```
+
+#### 安装界面InstallPage的viewmodel：InstallPageViewModel
+在ViewModels文件夹中新建`InstallPageViewModel`类并修改以下内容：
+```
+uusing CustomBA.HelpClass;
+using CustomBA.Models;
+using CustomBA.Views;
+using Microsoft.Practices.Prism.Commands;
+using Microsoft.Tools.WindowsInstallerXml.Bootstrapper;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+
+namespace CustomBA.ViewModels
+{
+    public class InstallPageViewModel : BaseViewModel
+    {
+        private static string SoftWareName = "wpfapptopackage";
+        private bool createShortCut;
+        private string installFolder;
+        private Visibility selectFileVisibility;
+        private DelegateCommand BrowseCommand;
+        private DelegateCommand InstallCommand;
+        private DelegateCommand CloseCommand;
+        private DelegateCommand ShowSelecFileCommand;
+
+        /// <summary>
+        /// InstallViewModel单例的引用，用来修改InstallViewModel.State
+        /// 以实时根据当前状态更改显示的界面内容
+        /// </summary>
+        private InstallViewModel installViewModel
+        {
+            get { return InstallViewModel.GetViewModel(); }
+        }
+        /// <summary>
+        /// Model单例的引用，用来定义事件触发执行什么操作
+        /// 同时通过该引用的某些方法来执行安装功能
+        /// </summary>
+        private BootstrapperApplicationModel BootstrapperModel
+        {
+            get
+            {
+                return BootstrapperApplicationModel.GetBootstrapperAppModel();
+            }
+        }
+        public InstallPageViewModel()
+        {
+            InitialCommand();
+            SeleFileVisibility = Visibility.Collapsed;
+            CreateShortCut = true;
+            InstallFolder = @"C:\Program Files (x86)\DeepGlin\" + SoftWareName;
+            WireUpEventHandlers();
+        }
+
+        /// <summary>
+        /// 背景图片资源
+        /// </summary>
+        public BitmapSource BackImage
+        {
+            get
+            {
+                Bitmap bmp = CustomBA.Properties.Resources.page1;
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(),
+                    IntPtr.Zero, System.Windows.Int32Rect.Empty,
+                    BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+            }
+        }
+        public BitmapSource LogoImage
+        {
+            get
+            {
+                Bitmap bmp = CustomBA.Properties.Resources.logo;
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(bmp.GetHbitmap(),
+                    IntPtr.Zero, System.Windows.Int32Rect.Empty,
+                    BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+            }
+        }
+        /// <summary>
+        /// 自定义安装路径的控件组是否显示
+        /// </summary>
+        public Visibility SeleFileVisibility
+        {
+            get { return selectFileVisibility; }
+            set
+            {
+                selectFileVisibility = value;
+                OnPropertyChanged("SeleFileVisibility");
+            }
+        }
+       /// <summary>
+       /// 是否创建桌面快捷方式
+       /// </summary>
+        public bool CreateShortCut
+        {
+            get { return createShortCut; }
+            set
+            {
+                createShortCut = value;
+                OnPropertyChanged("CreateShortCut");
+                this.SetBurnVariable("CreateShortCut", createShortCut.ToString());
+            }
+        }
+       /// <summary>
+       /// 自定义安装路径
+       /// 在用户选择的路径后再创建一个当前软件名称的文件夹，
+       /// 使安装不混乱在根目录中
+       /// </summary>
+        public string InstallFolder
+        {
+            get { return installFolder; }
+            set
+            {
+                try {
+                    if (value != installFolder && ValidDir(value))
+                    {
+                        string[] para = value.Split('\\');
+                        bool hassoftwarename = false;
+                        foreach (string pa in para)
+                        {
+                            if (pa == SoftWareName)
+                                hassoftwarename = true;
+                        }
+                        if (hassoftwarename)
+                            installFolder = value;
+                        else
+                            installFolder = value + "\\" + SoftWareName;
+                        OnPropertyChanged("InstallFolder");
+                        this.SetBurnVariable("InstallFolder", installFolder);
+                    }
+                }
+                catch {
+                    installFolder = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 界面四个按钮的单击事件
+        /// </summary>
+
+        public ICommand btn_browse
+        {
+            get { return BrowseCommand; }
+        }
+        public ICommand btn_install
+        {
+            get { return InstallCommand; }
+        }
+        public ICommand btn_cancel
+        {
+            get { return CloseCommand; }
+        }
+        public ICommand btn_show
+        {
+            get { return ShowSelecFileCommand; }
+        }
+        /// <summary>
+        /// 初始化按钮点击命令要调用的函数
+        /// </summary>
+        private void InitialCommand()
+        {
+            BrowseCommand = new DelegateCommand(Browse, IsValid);
+            InstallCommand = new DelegateCommand(Install, IsValid);
+            CloseCommand = new DelegateCommand(Close, IsValid);
+            ShowSelecFileCommand = new DelegateCommand(Show, IsValid);
+        }
+        /// <summary>
+        /// 打开选择安装路径窗口并获取用户选择的路径
+        /// </summary>
+        public void Browse()
+        {
+            var folderBrowserDialog = new FolderBrowserDialog { SelectedPath = InstallFolder };
+
+            if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                InstallFolder = folderBrowserDialog.SelectedPath;
+            }
+        }
+        /// <summary>
+        /// 开始安装
+        /// 调用PlanAction()方法而不是ApplyAction()
+        /// 此时只是开始执行配置安装信息，并不会执行安装进程
+        /// </summary>
+        public void Install()
+        {
+            this.BootstrapperModel.PlanAction(LaunchAction.Install);
+        }
+        /// <summary>
+        /// 取消安装，关闭安装进程
+        /// </summary>
+        public void Close()
+        {
+             installViewModel.State = InstallState.Cancelled;
+             CustomBootstrapperApplication.Dispatcher.InvokeShutdown();
+        }
+        /// <summary>
+        /// 显示/关闭自定义安装界面
+        /// </summary>
+        public void Show()
+        {
+            if (SeleFileVisibility == Visibility.Collapsed)
+                SeleFileVisibility = Visibility.Visible;
+            else
+                SeleFileVisibility = Visibility.Collapsed;
+        }
+        /// <summary>
+        /// 当安装进程开始时触发事件
+        /// 将当前状态更改位Applying
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void ApplyBegin(object sender, ApplyBeginEventArgs e)
+        {
+            this.installViewModel.State = InstallState.Applying;
+        }
+        /// <summary>
+        /// 开始安装时调用的方法位PlanAction()
+        /// 该方法执行完成之后触发本事件
+        /// 事件中调用ApplyAction()方法开始执行安装进程
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void PlanComplete(object sender, PlanCompleteEventArgs e)
+        {
+            if (installViewModel.State == InstallState.Cancelled)
+            {
+                CustomBootstrapperApplication.Dispatcher
+                  .InvokeShutdown();
+                return;
+            }
+            this.BootstrapperModel.ApplyAction();
+        }
+
+        /// <summary>
+        /// 注册BootstrapperApplication的两个事件
+        /// </summary>
+        private void WireUpEventHandlers()
+        {
+            this.BootstrapperModel.BootstrapperApplication.PlanComplete += this.PlanComplete;
+            this.BootstrapperModel.BootstrapperApplication.ApplyBegin += this.ApplyBegin;
+        }
+
+        /// <summary>
+        /// pathj是否是正确的文件夹路径
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public bool ValidDir(string path)
+        {
+            try
+            {
+                string p = new DirectoryInfo(path).FullName;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 向Burn传递用户参数
+        /// </summary>
+        /// <param name="variableName"></param>
+        /// <param name="value"></param>
+        public void SetBurnVariable(string variableName, string value)
+        {
+            this.BootstrapperModel.SetBurnVariable(variableName, value);
+        }
+        public bool IsValid()
+        {
+            return true;
+        }
+    }
+}
+
+```
+其他ViewModel的用法与这两个类似，不在赘述，请按照提供的源码自行设置
+### 创建View
+关于界面元素的定义，样式，文字，binding的数据，都是基础的WPF操作，请通过源码自行查看。需要说明的是，当你打开`InstallView`时xaml中会提示“对象未被设置到实例”，这是因为我们的单例Model只能再程序入口实例化，而这个入口不会在CustomBA项目编译时执行，只会通过Bootstrapper安装进程调用。
+### 将类库引入Bootstrapper
+当前面的工作做完之后编译CustomeBA项目，注意使用Release方式而不是Debug哦。如果一切顺利的话你会得到一个CustomBA.dll库文件。
+* 首先，在Bootstrapper项目的引用文件夹中添加对CustomBA.dll的引用。
+* 而后在Bundle.wxs文件`<Bundle>`与`</Bundle>`之间添加如下代码即可将我们自定义的类库和WPF程序需要的类库引入Bootstrapper项目：
+```
+  <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost" >
+      <Payload SourceFile="$(var.CustomBA.TargetDir)CustomBA.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)BootstrapperCore.config" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Composition.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Interactivity.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Mvvm.Desktop.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.Mvvm.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.PubSubEvents.dll" />
+      <Payload SourceFile="$(var.CustomBA.TargetDir)Microsoft.Practices.Prism.SharedInterfaces.dll" />
+    </BootstrapperApplicationRef>
+```
+### 使用Setup Project打包你的程序
+在创建的Setup Project项目中打开Product.wxs文件，将
+```
+<Directory Id="TARGETDIR"
+           Name="SourceDir">
+```
+修改为
+```
+<Directory Id="TARGETDIR"
+           Name="SourceDir">
+  <Directory Id="ProgramFilesFolder">
+    <Directory Id="MyProgramDir"
+               Name="Install Practice">
+
+      <Component Id="CMP_InstallMeTXT"
+                 Guid="E8A58B7B-F031-4548-9BDD-7A6796C8460D">
+
+        <File Id="FILE_MyProgramDir_InstallMeTXT"
+              Source="$(var.MyAppname.TargetPath)"
+              KeyPath="yes" />
+      </Component>
+    </Directory>
+  </Directory>
+</Directory>
+```
+其中`MyAppname`为你已经引用的要打包的项目名称，当然你也可以用相对路径或则绝对路径指定任意的文件，这段代码表示要把这里所有的文件打包为msi安装文件，安装时会把文件安装在`C:\ProgrameFiles(86)\Install Practice`中。
+此时若要Build该项目，要先保证`<Product>`的`Manufacturer`已经被赋值。生成之后你会在`bin/Release`目录下看到一个msi文件。
+### 使用Bootstrapper打包msi文件
+我们已经在Bootstrapper项目中引入了自定义的用户界面，接下来向它添加已经打包好的msi文件就可以生成拥有自定义界面的安装程序了。
+在Bundle.wxs文件中，将`<Chain>`结点由原来的：
+```
+<Chain>
+      <!--TODO: Define the list of chained packages.-->
+   </Chain>
+```
+改为：
+```
+<Chain  DisableRollback="yes">
+      <MsiPackage SourceFile="..\SetupProject\bin\Release\zh-cn\DGSetup1.msi" DisplayInternalUI="no">
+      </MsiPackage>
+    </Chain>
+```
+这里的SourceFile属性要改为你自己的msi文件路径，同时也不要忘了`<Bundle>`的`Manufacturer`属性要赋值。而后就可以Build这个项目了，你会在`bin/Release`文件夹中看到一个.exe安装文件了，运行一下看看是不是你的wpf界面。
+关于其他常见的设置，我在前文或者后文中都写到了，比如创建快捷方式，验证.net framework版本，从界面向安装包传值等等，请按[目录](#目录)查看，或者查看末尾提供的参考教程链接。
+
 - - -
 ### Product文件中元素与属性的简单说明
 #### Product元素
@@ -279,12 +942,139 @@ namespace CustomBA
 ```
 一个`Component`之中最好只放一个文件，每一个文件最好都设置`KeyPath`为“yes”，这是因为`KeyPath`文件可以在丢失后使用“修复”功能重新得到，而一个`Component`只能有一个`KeyPath`文件。 
 #### File元素
+一个`<File>`表示要在msi中打包并由客户安装到计算机的文件
 #### 创建快捷方式
+##### 桌面快捷方式
+在Product.wxs的`<Directory Id="TARGETDIR" Name="SourceDir">`中间添加如下内容:
+```
+<Directory Id="DesktopFolder"></Directory>
+```
+在Product.wxs的任意位置添加如下内容：
+```
+ <DirectoryRef Id="DesktopFolder">
+        <Component Id="ApplicationShortcutDeskTop">
+          <Shortcut Id="ApplicationDeskTopShortcut"
+                 Name="!(loc.ProductName)"
+                 Description="!(loc.Title)"
+                 Target="[#myapplication.exe]" Icon="icon"
+                 WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+          <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+          <RegistryValue
+              Root="HKCU"
+              Key="Software\Microsoft\!(loc.CompanyName)\!(loc.RegistryName)"
+              Name="installed"
+              Type="integer"
+              Value="1"
+              KeyPath="yes"/>
+        </Component>
+    </DirectoryRef>
+```
+`(loc.Name)`是引用同跟目录下`.wxl`文件中定义的字符串。
+在`<Feature>`中添加如下内容：
+```
+<ComponentRef Id="ApplicationShortcutDeskTop" />
+```
+##### StartMenu快捷方式
+在Product.wxs的`<Directory Id="TARGETDIR" Name="SourceDir">`中间添加如下内容:
+```
+<Directory Id="ProgramMenuFolder">
+        <Directory Id="AppStartMenuFolder" Name="!(loc.ProductName)"/>
+      </Directory>
+```
+在Product.wxs的任意位置添加如下内容：
+```
+<DirectoryRef Id="AppStartMenuFolder">
+      <Component Id="ApplicationShortcutMenu" Guid="5AE52100-3B6E-4BA7-8A87-ED50F790B316">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="!(loc.ProductName)"
+                  Description="!(loc.Title)"
+                  Target="[#myapplication.exe]" Icon="icon"
+                  WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+        <RemoveFolder Id="CleanUpShortCut" Directory="AppStartMenuFolder" On="uninstall"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\!(loc.CompanyName)\!(loc.RegistryName)" 
+                       Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+```
+在`<Feature>`中添加如下内容：
+```
+<ComponentRef Id="ApplicationShortcutMenu" />
+```
+#### 添加到注册表
+在Product.wxs的`<Directory Id="TARGETDIR" Name="SourceDir">`中间添加如下内容:
+```
+<ComponentRef Id="WriteToRegistry" />
+```
+在Product.wxs的任意位置添加如下内容：
+```
+<Component Id="WriteToRegistry"
+                 Guid="1ECA3238-1B7B-4818-9A02-FAD3D6773613">
+
+        <RegistryValue Id="RegistryValue"
+                       KeyPath="yes"
+                       Action="write"
+                       Root="HKLM"
+                       Key="Software\Microsoft\!(loc.CompanyName)\!(loc.RegistryName)"
+                       Name="!(loc.ProductName)"
+                       Value="!(loc.ProductName)"
+                       Type="string" />
+      </Component>
+```
+#### 条件判断
+当我们从用户获得传过来的值，或者自己在Product中定义了一个`<Property>`时，我们想根据该属性值的不同判断某些操作是否进行，则在该`<Component>`中添加如下内容：
+```
+<Condition>
+            <![CDATA[PROPERTYNAME=VALUE]]>
+          </Condition>
+```
+当你的`PROPERTYNAME`属性值为`VALUE`时该操作才会执行。
 - - -
 
 ### Bundle文件中元素与属性的简单说明
-
-
+#### Chain元素
+`<Chain>`中间可以放置任意多个安装文件，如果你想依次执行多个msi或者exe安装文件，只需要像这样:
+```
+ <Chain  DisableRollback="yes">
+      <ExePackage ISourceFile="..\SetupProject\bin\Release\zh-cn\DGSetup.exe" DisplayInternalUI="no">
+      </ExePackage>
+      <MsiPackage SourceFile="..\SetupProject\bin\Release\zh-cn\DGSetup1.msi" DisplayInternalUI="no">
+      </MsiPackage>
+    </Chain>
+```
+添加就是了，其中`<MsiPackage>`用来引用msi安装文件，`<ExePackage>`用来引用exe安装文件。
+#### 判断当前操作系统版本是否满足
+在Bootstrapper项目中添加引用WixBalExtension程序集并在`<Bundel>`结点添加命名空间的引用：
+```
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" 
+     xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" >
+```
+在`<Bundle>`元素任意位置添加如下内容：
+```
+<bal:Condition Message="!(loc.windowsversionmes)">
+      <![CDATA[VersionNT >= v6.1]]>
+    </bal:Condition>
+```
+6.1表示windows7。
+#### 判断framework版本并下载安装
+在Bootstrapper项目中添加引用WixUtilExtension程序集并在`<Bundel>`结点添加命名空间的引用：
+```
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" 
+      xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+```
+在`<Bundle>`元素任意位置添加如下内容：
+```
+ <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx4FullVersion" />
+    <util:RegistrySearch Root="HKLM" Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx4x64FullVersion" Win64="yes" />
+```
+在`<Chain>`添加：
+```
+<ExePackage Id="Netfx4Full" Cache="yes" Compressed="no"  PerMachine="yes" 
+            Permanent="yes" Vital="yes" SourceFile="..\dotnetfx40_full_x86_x64.exe"
+            InstallCommand="/q /norestart "  DownloadUrl="http://go.microsoft.com/fwlink/?LinkId=164193" 
+            DetectCondition="Netfx4FullVersion AND (NOT VersionNT64 OR Netfx4x64FullVersion)">
+      </ExePackage>
+```
+在你Build项目时需要在`SourceFile`指定的位置存在dotnetfx40_full_x86_x64.exe文件，但`Compressed="no" `使得该文件不会被打包进你的安装文件，当用户只拿到安装包来安装时若系统中不存在.net 4.0时安装文件就会自动从`DownloadUrl`下载文件进行安装。
 ## 参考内容
 ### WiX下载地址
 http://wixtoolset.org/releases/ ，虽然已经提供v3.11版本，但当我已经安装.net framework 4.0后，v3.11依旧提示需要安装.net 3.0，所以我使用的是wix v3.10.3 。
