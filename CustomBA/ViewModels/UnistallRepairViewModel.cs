@@ -21,7 +21,7 @@ namespace CustomBA.ViewModels
         private BootstrapperApplicationModel BootstrapperModel
         {
             get
-            { return BootstrapperApplicationModel.GetBootstrapperAppModel(CustomBootstrapperApplication.GetApplication()); }
+            { return BootstrapperApplicationModel.GetBootstrapperAppModel(); }
         }
         private DelegateCommand CloseCommand;
         private DelegateCommand RepairCommand;

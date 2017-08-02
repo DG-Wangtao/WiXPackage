@@ -23,7 +23,7 @@ namespace CustomBA.ViewModels
         {
             get
             {
-                return BootstrapperApplicationModel.GetBootstrapperAppModel(CustomBootstrapperApplication.GetApplication());
+                return BootstrapperApplicationModel.GetBootstrapperAppModel();
             }
         }
         private int cacheProgress;

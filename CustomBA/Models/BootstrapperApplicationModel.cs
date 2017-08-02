@@ -68,6 +68,14 @@ namespace CustomBA.Models
                LaunchAction.Help;
         }
     }
+    /// <summary>
+    /// Present(已安装)
+    /// NotPresent(未安装)
+    /// Applying(正在应用)
+    /// Applied(已配置完成)
+    /// Cancelled(取消操作)
+    /// Failed(配置失败)
+    /// </summary>
     public enum InstallState
     {
         Initializing,

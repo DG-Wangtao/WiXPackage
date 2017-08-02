@@ -10,17 +10,6 @@ namespace CustomBA
     public class CustomBootstrapperApplication :BootstrapperApplication
     {
         public static Dispatcher Dispatcher { get; set; }
-        private static CustomBootstrapperApplication customBootstrapperApplication;
-        public static CustomBootstrapperApplication GetApplication()
-        {
-            if (customBootstrapperApplication == null)
-                customBootstrapperApplication = new CustomBootstrapperApplication();
-            return customBootstrapperApplication;
-        }
-        public CustomBootstrapperApplication()
-        {
-            customBootstrapperApplication = this;
-        }
         protected override void Run()
         {
             Dispatcher = Dispatcher.CurrentDispatcher;

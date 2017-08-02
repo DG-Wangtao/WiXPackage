@@ -8,9 +8,6 @@
     <Icon Id="icon" SourceFile="icon\icon.ico"/>
 		<MajorUpgrade  Schedule="afterInstallInitialize" DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate />
-    <!--桌面快捷方式/菜单栏图标/开机自启-->
-    <Property Id="CreateShortcutDeskTop"></Property>
-    <Property Id="CreateShortcutMenu">1</Property>
     <!--put files to package-->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="INSTALLFOLDER"/>
@@ -58,7 +55,7 @@
     <DirectoryRef Id="DesktopFolder">
         <Component Id="ApplicationShortcutDeskTop">
           <Condition>
-            <![CDATA[CreateShortcutDeskTop=1]]>
+            <![CDATA[CREATESHORTCUTDESKTOP="True"]]>
           </Condition>
           <Shortcut Id="ApplicationDeskTopShortcut"
                  Name="!(loc.ProductName)"
@@ -79,9 +76,6 @@
     <!--Shortcut in startmenu-->
     <DirectoryRef Id="AppStartMenuFolder">
       <Component Id="ApplicationShortcutMenu" Guid="5AE52100-3B6E-4BA7-8A87-ED50F790B316">
-        <Condition>
-          <![CDATA[CreateShortcutMenu=1]]>
-        </Condition>
         <Shortcut Id="ApplicationStartMenuShortcut"
                   Name="!(loc.ProductName)"
                   Description="!(loc.Title)"
