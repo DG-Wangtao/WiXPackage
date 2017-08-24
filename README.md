@@ -11,6 +11,9 @@
         - [编辑Product](#编辑product)
             - [修改名称等文字信息](#修改名称等文字信息)
             - [修改要打包安装的文件](#修改要打包安装的文件)
+            - [批量添加多个文件](#批量添加多个文件)
+            	- [将路径下所有文件引入](#将路径下所有文件引入)
+                - [修改生成的wxs文件](#修改生成的wxs文件)
             - [添加自定义变量](#添加自定义变量)
             - [如何创建桌面与开始桌面快捷方式](#如何创建桌面与开始桌面快捷方式)
         - [编辑Bundle](#编辑bundle)
@@ -113,6 +116,26 @@ Product.wxs:  
 ```
 这里采用的方式引用要打包的WpfAppToPackage项目的输出目录，也可以采用相对路径的形式`Source="..\..\LibraFClient\LibraFClient\bin\Release\LibraFClient.exe"` 或者绝对路径也可以，但需要注意，采用相对路径时需要手动设置Guid的值。  
 当你要打包多个文件时，要注意每一个`<Component>`最好只含有一个`<File>`，而且`<File>`的`KeyPath`的值最好为`yes`，因为`KeyPath`文件可以在丢失后使用“修复”功能重新得到，而一个`Component`只能有一个`KeyPath`文件。
+#### 批量添加多个文件
+##### 将路径下所有文件引入
+当需要打包几十几百个文件时，如果自己手动添加`<File>`节点就太麻烦了，所以WiX提供了`heat.exe`工具来批量添加指定文件夹下的所有文件。最简单的使用`heat.exe`的方式是，在我们的`msi`即`Setup Project`项目名称上右键->属性，找到`Build Events`选项卡，在里面的`Pre-build Event Command Line`中添加如下一行命令：
+```
+heat dir "yourdirpath" -dr INSTALLFOLDER -cg yourComponentId -gg -scom -sreg -sfrag -out "youroutputpath\UtilityHeat.wxs"
+```
+* `dir`：要添加打包的文件夹路径，后面是它的值，用双引号括起来
+* `-dr`：安装时要把这些文件放置的路径，是`Product.wxs`中某一`<Directory>`的`Id`的值，不需要双引号
+* `-cg`：在`Product.wxs`中某一`<ComponentRef>`的`Id`的值
+* `-out`:heat.exe会生成一个`wxs`文件，`-out`便是指明这个文件放在什么地方，当然文件名字可以随自己设置
+
+这样在编译项目的时候应该会创建一个`wxs`，然后我们把它引入到我们的`msi`即`Setup Project`项目中就可以了，因为WiX支持跨文件读取节点，所以这个`wxs`文件内定义的所有内容和`Product.wxs`中定义的内容都会相互引用。
+但不幸的是，我添加命令之后并不能正确的生成项目，所以只好采取另外一种方式，那就是找到`heat.exe`然后在命令行中调用它并指定参数：
+我的`heat.exe`路径是`C:\Program Files (x86)\WiX Toolset v3.10\bin\heat.exe`，所以打开命令行工具，定位到`C:\Program Files (x86)\WiX Toolset v3.10\bin`，然后调用`heat.exe`并给他相同的参数：
+```
+C:\Program Files (x86)\WiX Toolset v3.10\bin>heat.exe dir "yourdirpath" -dr INSTALLFOLDER -cg yourComponentId -gg -scom -sreg -sfrag -out "youroutputpath\UtilityHeat.wxs"
+```
+控制台会提示你生成成功，然后再把生成的文件引入到项目当中即可。
+##### 修改生成的wxs文件
+生成成功之后打开wxs文件，会看到他里面是包含了所有要打包的文件引用，但是路径都好像不太对，可以使用批量查找修改的方式将所有路径更改到正确的地方。一般WiX会按照当时要打包的文件夹名称创建一个新的文件夹，然后把所有文件放到里面，如果需要的话可以对文档上方的` <DirectoryRef>`进行修改。
 #### 添加自定义变量
 当需要获取除安装路径/是否创建桌面快捷方式这两种用户安装时输入的信息，如用户名时，可以使用`<Property>`元素，它的`Id`属性唯一标识它，而`Value`属性则是它的值，他可以定义在Product.wxs中`<Product>`与`</Product>`之间任意的位置，通过`[IdName]`可以引用它的值。当然要获取用户输入的信息，还需要其他的设置：
 * 在product.wxs中定义`Property`:`  <Property Id="USERNAME" Value=""></Property>`
